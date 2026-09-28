@@ -105,7 +105,10 @@ try {
     $exitCode = $LASTEXITCODE
     $text = $raw -join "`n"
     Assert-True ($exitCode -eq 0) 'Query GET did not exit 0'
-    $data = @($text | ConvertFrom-Json)
+    # Assign directly: Windows PowerShell 5.1 emits a JSON array as one pipeline
+    # object; wrapping the pipeline in @() would create a nested array there.
+    $data = $text | ConvertFrom-Json
+    Write-Output ('QUERY_COUNT ' + $data.Count)
     Assert-True ($data.Count -eq 10) 'Query did not return 10 posts'
     Assert-True (@($data | Where-Object { $_.userId -ne 1 }).Count -eq 0) 'Query contains a different userId'
     Record-Check 'get-query' $exitCode 0 $text
