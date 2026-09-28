@@ -1,0 +1,36 @@
+name: Windows curl validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/windows-curl.yml'
+      - 'scripts/Test-CurlArticle.ps1'
+      - 'request.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-curl-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: ${{ matrix.shell }} / ${{ matrix.curl }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]
+        curl: [path, system32]
+    steps:
+      - name: Check out public test code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify tutorial commands and exit codes
+        shell: ${{ matrix.shell }}
+        run: ./scripts/Test-CurlArticle.ps1 -CurlSelection '${{ matrix.curl }}'
