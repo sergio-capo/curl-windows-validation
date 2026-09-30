@@ -1,5 +1,15 @@
 # curl on Windows: reproducible tutorial checks
 
+## Python venv checks on this branch
+
+The `codex/python-venv-validation` branch also checks Python venv in Windows
+PowerShell 5.1, PowerShell 7 and Command Prompt. It creates disposable environments
+under the runner's temporary directory, installs the public `requests` package,
+checks activation/deactivation and rebuilds packages from requirements.txt.
+No execution policy is changed. The deletion check targets only a new disposable
+venv created within that job. No credentials or private documents are used.
+See the separate **Python venv validation** workflow for results.
+
 This repository contains only public test code and dummy data for checking the
 [curl introduction article](https://qiita.com/s_horikoshi/items/d2dde6afc568d30b8d2a).
 It does not contain the article's source repository, business documents, tokens,

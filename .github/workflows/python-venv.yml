@@ -1,0 +1,52 @@
+name: Python venv validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/python-venv-validation]
+    paths:
+      - '.github/workflows/python-venv.yml'
+      - 'scripts/Test-Venv*'
+permissions:
+  contents: read
+jobs:
+  powershell:
+    name: venv / ${{ matrix.shell }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]
+    env:
+      PY_PYTHON: '3.14'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14.6'
+      - name: Test Windows PowerShell 5.1
+        if: matrix.shell == 'powershell'
+        shell: powershell
+        run: ./scripts/Test-Venv.ps1
+      - name: Test PowerShell 7
+        if: matrix.shell == 'pwsh'
+        shell: pwsh
+        run: ./scripts/Test-Venv.ps1
+  cmd:
+    name: venv / cmd
+    runs-on: windows-2025
+    timeout-minutes: 10
+    env:
+      PY_PYTHON: '3.14'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14.6'
+      - name: Test Command Prompt
+        shell: cmd
+        run: call scripts\Test-Venv.cmd
